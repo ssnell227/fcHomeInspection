@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import styled from '@emotion/styled'
 import { graphql } from 'gatsby'
-import { Layout, Listing, Wrapper, Title } from '../components'
+import { Layout, Listing, Wrapper, Title, Header } from '../components'
+import htmlSerializer from '../gatsby/htmlSerializer'
 import website from '../../config/website'
 
 const Hero = styled.header`
@@ -97,34 +98,17 @@ const IndexWrapper = Wrapper.withComponent('main')
 class Index extends Component {
   render() {
     const {
-      data: { homepage, social, posts, projects },
+      data: { scrollableHomepage },
     } = this.props
+    const {about_banner, about_banner_list, animated_banner, service_images, services_title, testimonials_title}= scrollableHomepage.nodes[0].data
     return (
       <Layout>
+        <Header/>
         <Hero>
-          <HeroInner>
-            <h1>{homepage.data.title.text}</h1>
-            <HeroText dangerouslySetInnerHTML={{ __html: homepage.data.content.html }} />
-            <Social>
-              {social.nodes.map((s, index) => (
-                <li data-name={`social-entry-${index}`} key={s.primary.label.text}>
-                  <a href={s.primary.link.url}>{s.primary.label.text}</a>
-                </li>
-              ))}
-            </Social>
-          </HeroInner>
+          {/* carousel goes here */}
         </Hero>
         <IndexWrapper id={website.skipNavId} style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
-          <Title style={{ marginTop: '4rem' }}>Recent posts</Title>
-          <Listing posts={posts.nodes} />
-          <Title style={{ marginTop: '8rem' }}>Recent projects</Title>
-          <ProjectListing>
-            {projects.nodes.map((project) => (
-              <li key={project.primary.label.text}>
-                <a href={project.primary.link.url}>{project.primary.label.text}</a>
-              </li>
-            ))}
-          </ProjectListing>
+          
         </IndexWrapper>
       </Layout>
     )
@@ -159,56 +143,50 @@ Index.propTypes = {
 
 export const pageQuery = graphql`
   query IndexQuery {
-    homepage: prismicHomepage {
-      data {
-        title {
-          text
-        }
-        content {
-          html
-        }
-      }
-    }
-    social: allPrismicHeroLinksBodyLinkItem {
+    scrollableHomepage: allPrismicScrollableHomepage {
       nodes {
-        primary {
-          label {
-            text
-          }
-          link {
-            url
-          }
-        }
-      }
-    }
-    posts: allPrismicPost(sort: { fields: [data___date], order: DESC }) {
-      nodes {
-        uid
         data {
-          title {
-            text
-          }
-          date(formatString: "DD.MM.YYYY")
-          categories {
-            category {
-              document {
-                data {
-                  name
-                }
-              }
+          about_banner {
+            about_banner_image {
+              alt
+              url
+            }
+            about_banner_title {
+              html
             }
           }
-        }
-      }
-    }
-    projects: allPrismicProjectsBodyLinkItem {
-      nodes {
-        primary {
-          label {
-            text
+          about_banner_list {
+            about_list_item_image {
+              alt
+              url
+            }
+            about_list_item_text {
+              html
+            }
+            about_list_item_title {
+              html
+            }
           }
-          link {
-            url
+          animated_banner {
+            banner_image {
+              alt
+              url
+            }
+          }
+          service_images {
+            service_image {
+              alt
+              url
+            }
+            service_text {
+              html
+            }
+          }
+          services_title {
+            html
+          }
+          testimonials_title {
+            html
           }
         }
       }
